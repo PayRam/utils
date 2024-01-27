@@ -1,3 +1,4 @@
 "# Utils for Payram"
 
-This has all our utilitiy scripts and software.
+Install Payram with just one line.
+```wget -O - https://raw.githubusercontent.com/PayRam/utils/main/setup.sh | bash ```
