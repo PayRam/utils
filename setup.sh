@@ -152,20 +152,6 @@ echo "Pulling latest Docker images..."
 pull_docker_image buddhasource/payram:latest
 pull_docker_image buddhasource/payram-web:latest
 
-run_docker_container() {
-    container_name=$1
-    port_mapping=$2
-    volume_mapping=$3
-    image_name=$4
-    network_mode=$5  # Add this parameter for network mode
-
-    if output=$(docker run -d --name "$container_name" -p "$port_mapping" -v "$volume_mapping" -e PAYRAM_NETWORK_MODE="$network_mode" "$image_name" 2>&1); then
-        echo "Successfully started container $container_name."
-    else
-        echo "Failed to start container $container_name. Error details: $output"
-        exit 1
-    fi
-}
 
 # Call the function to check, install, and start Docker
 check_install_and_start_docker
@@ -173,7 +159,37 @@ check_install_and_start_docker
 # Pull the latest images (remains the same as in your previous script)
 
 # Run the Docker containers and check if successful
+start_payram() {
+	
+	docker run -d --name payram -p 2357:2357 -v $PAYRAM_FILES:/payram_files -e PAYRAM_NETWORK_MODE=mainnet buddhasource/payram:latest
+	
+  	# Check the status of the last executed command (Docker run)
+	if [ $? -eq 0 ]; then
+	    	echo "Success: Payram container started."
+	else
+	    	echo "Error: Failed to start the Payram container."
+	    	# Log the error. Adjust the path to your preferred log file
+     		echo "$(date) : Error in starting Payram container" >> /var/log/docker_error.log
+     		exit 1
+	fi
+ 
+}
+
+start_payram_web() {
+	docker run -d --name payram-web -p 80:2358 -p 443:443 -v $PAYRAM_FILES/cert:/payram_files/cert buddhasource/payram-web:latest
+	 # Check the status of the last executed command (Docker run)
+	if [ $? -eq 0 ]; then
+	    	echo "Success: Payram-web container started."
+	else
+	    	echo "Error: Failed to start the Payram-web container."
+	    	# Log the error. Adjust the path to your preferred log file
+	    	echo "$(date) : Error in starting Payram-web container" >> /var/log/docker_error.log
+     		exit 1
+	fi
+}
 echo "Running Docker containers..."
-run_docker_container "payram" "2357:2357" "$PAYRAM_FILES:/payram_files" "buddhasource/payram:latest" "$NETWORK"
-run_docker_container "payram-web" "80:2358" "$PAYRAM_FILES:/payram_files" "buddhasource/payram-web:latest"
+start_payram
+
+start_payram_web
+
 echo "Containers are up and running."
