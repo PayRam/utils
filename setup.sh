@@ -161,7 +161,7 @@ check_install_and_start_docker
 # Run the Docker containers and check if successful
 start_payram() {
 	
-	docker run -d --name payram -p 2357:2357 -v $PAYRAM_FILES:/payram_files -e PAYRAM_NETWORK_MODE=mainnet buddhasource/payram:latest
+	docker run -d --name payram -p 2357:2357 -p 2359:443 -v $PAYRAM_FILES:/payram_files -e PAYRAM_NETWORK_MODE=mainnet buddhasource/payram:latest
 	
   	# Check the status of the last executed command (Docker run)
 	if [ $? -eq 0 ]; then
